@@ -1,7 +1,8 @@
 ## Multi-Agent Deep Reinforcement Learning for UAV Placement in Optical IRS-Aided Aerial Networks
 
+### Our proposed MADRL framework for Optical IRS-Aided Aerial Networks
 <p align="center">
-  <img src="images/proposed_framework.png" alt="framework" width="300">
+  <img src="images/proposed_framework.png" alt="framework" width="400">
 </p>
 
 ### Train our proposed CP-PPO MADRL model🤖
