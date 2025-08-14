@@ -1,30 +1,18 @@
-import gymnasium as gym
-import numpy as np
-import math
-import random
-import matplotlib
 import matplotlib.pyplot as plt
-from collections import namedtuple, deque
-from itertools import count
 import pandas as pd
 
 import torch
-import torch.nn as nn
-import torch.optim as optim
-import torch.nn.functional as F
 
-from torch.distributions import MultivariateNormal
-from torch.distributions import Categorical
 
 # import our customed uav-environment and policy
 from environment import IRS_env
 
 from PPO_model_CNN import PPO
+from arguments import parse_args
 import time
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-
-
+args = parse_args()
 
 has_continuous_action_space = False
 
@@ -48,7 +36,6 @@ lr_critic = 0.001       # learning rate for critic network
 ppo_agent0 = PPO(209, 5, lr_actor, lr_critic, gamma, K_epochs, eps_clip, has_continuous_action_space, action_std)
 ppo_agent1 = PPO(209, 5, lr_actor, lr_critic, gamma, K_epochs, eps_clip, has_continuous_action_space, action_std)
 ppo_agent2 = PPO(209, 5, lr_actor, lr_critic, gamma, K_epochs, eps_clip, has_continuous_action_space, action_std)
-env = IRS_env(max_step = max_ep_len, users = number_users)
 
 if __name__ == '__main__':
 
@@ -63,26 +50,30 @@ if __name__ == '__main__':
     backhaul_capacity_UAV1 = []
     backhaul_capacity_UAV2 = []
 
+    env = IRS_env(L=args.L, lambda_=args.lambda_, h_UAV=args.h_UAV, h_HAP=args.h_HAP, zenith_angle=args.zenith_angle, 
+                  theta_i=args.theta_i, wo=args.wo, a=args.a, users=args.users, uavs=args.uavs, size=args.size,
+                  varphi_=args.varphi_, v0=args.v0, tau=args.tau, noise_power_FSO=args.noise_power_FSO, P_FSO=args.P_FSO, 
+                  B_FSO=args.B_FSO, noise_power=args.noise_power, B_RF=args.B_RF, r_th=args.r_th, max_step= args.max_step,
+                  grid_num=args.grid_num, Nc=args.Nc, Hcl=args.Hcl)
+
     ###### test model ##########
     O_UAV0, O_UAV1, O_UAV2, CLWC = env.reset()
-    
-    
 
     for step_i in range(0,max_ep_len):
-        start = time.time()
+        # start = time.time()
         action0 = ppo_agent0.select_action(O_UAV0,CLWC)
         action1 = ppo_agent1.select_action(O_UAV1,CLWC)
         action2 = ppo_agent2.select_action(O_UAV2,CLWC)
         O_UAV0, O_UAV1, O_UAV2, CLWC, S, N_UAV0, N_UAV1, N_UAV2, backhaul_capacity = env.step([action0,action1,action2])
-        percentage_users.append(S*100/number_users)
-        percentage_users_UAV0.append(N_UAV0*100/number_users)
-        percentage_users_UAV1.append(N_UAV1*100/number_users)
-        percentage_users_UAV2.append(N_UAV2*100/number_users)
+        percentage_users.append(S*100/args.users)
+        percentage_users_UAV0.append(N_UAV0*100/args.users)
+        percentage_users_UAV1.append(N_UAV1*100/args.users)
+        percentage_users_UAV2.append(N_UAV2*100/args.users)
         backhaul_capacity_UAV0.append(backhaul_capacity[0])
         backhaul_capacity_UAV1.append(backhaul_capacity[1])
         backhaul_capacity_UAV2.append(backhaul_capacity[2])
-        end = time.time()
-        print('computational time = ', end- start)
+        # end = time.time()
+        # print('computational time = ', end - start)
         if step_i == 150 or step_i == 250 or step_i == 499:
             env.animation(step_i)
 

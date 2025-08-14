@@ -152,6 +152,7 @@ class IRS_env(gym.Env):
         self.heatmap_UAV2 = np.zeros((self.grid_num,self.grid_num))
         self.heatmap_users_unsatisfied = np.zeros((self.grid_num,self.grid_num))
 
+
     def update_zenith_angle_and_reflected_angle(self):
         hap_uav_initial_dis = np.tan(self.zenith_angle[0]) * self.h_HAP # self.zenith_angle[0 or 1 or 2] is initial zenith angle
         for UAV_i in range(self.uavs):
@@ -789,7 +790,6 @@ class IRS_env(gym.Env):
         plt.title('Step ' + str(self.step_), fontsize=14, pad=20)
         plt.savefig("parameters_overtime.png")
         plt.close()
-
     
 
 

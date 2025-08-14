@@ -1,11 +1,6 @@
-import os
-import glob
 import time
 
 import torch
-import torch.nn as nn
-from torch.distributions import MultivariateNormal
-from torch.distributions import Categorical
 
 import numpy as np
 import gymnasium as gym
@@ -15,7 +10,7 @@ from environment import IRS_env
 from PPO_model_CNN import PPO
 from arguments import parse_args
 
-import matplotlib
+
 import matplotlib.pyplot as plt
 
 import pandas as pd
@@ -56,7 +51,11 @@ ppo_agent2 = PPO(209, 5, lr_actor, lr_critic, gamma, K_epochs, eps_clip, has_con
 
 if __name__ == '__main__':
 
-    env = IRS_env(L = args.L, lambda_ = args.lambda_, max_step= args.max_step)
+    env = IRS_env(L=args.L, lambda_=args.lambda_, h_UAV=args.h_UAV, h_HAP=args.h_HAP, zenith_angle=args.zenith_angle, 
+                  theta_i=args.theta_i, wo=args.wo, a=args.a, users=args.users, uavs=args.uavs, size=args.size,
+                  varphi_=args.varphi_, v0=args.v0, tau=args.tau, noise_power_FSO=args.noise_power_FSO, P_FSO=args.P_FSO, 
+                  B_FSO=args.B_FSO, noise_power=args.noise_power, B_RF=args.B_RF, r_th=args.r_th, max_step= args.max_step,
+                  grid_num=args.grid_num, Nc=args.Nc, Hcl=args.Hcl)
     # training loop
     rewards_per_episode = []
     percentage_user_episode = []
