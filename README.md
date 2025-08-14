@@ -6,7 +6,7 @@
 </p>
 
 ### Train our proposed CP-PPO MADRL model🤖
-We can try with different IRS size as follows
+We can try different IRS sizes as follows
 ~~~
 py train.py --L 0.4 
 ~~~
