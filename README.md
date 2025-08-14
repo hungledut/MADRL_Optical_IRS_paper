@@ -1,6 +1,8 @@
 ## Multi-Agent Deep Reinforcement Learning for UAV Placement in Optical IRS-Aided Aerial Networks
 
-![framework](images/proposed_framework.png)
+<p align="center">
+  <img src="images/proposed_framework.png" alt="framework" width="500">
+</p>
 
 ### Train our proposed CP-PPO MADRL model🤖
 We can try with different IRS size as follows
@@ -12,4 +14,6 @@ py train.py --L 0.4
 py test.py 
 ~~~
 
-![animation](images/UAV_animation.gif)
+<p align="center">
+  <img src="images/UAV_animation.gif" alt="framework" width="500">
+</p>
