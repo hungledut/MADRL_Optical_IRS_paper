@@ -8,3 +8,5 @@ py train.py
 ~~~
 py test.py 
 ~~~
+
+![animation](images/UAV_animation.gif)
