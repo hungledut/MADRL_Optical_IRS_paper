@@ -74,8 +74,9 @@ if __name__ == '__main__':
         backhaul_capacity_UAV2.append(backhaul_capacity[2])
         # end = time.time()
         # print('computational time = ', end - start)
-        if step_i == 150 or step_i == 250 or step_i == 499:
-            env.animation(step_i)
+
+        if step_i % 5 == 0:
+            env.plot_results(step_i)
 
             ######################################### USERS ##############################################
             # Set global font size
@@ -124,4 +125,5 @@ if __name__ == '__main__':
             plt.close()
 
             env.plot_cloud()
+
     

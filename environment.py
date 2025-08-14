@@ -551,6 +551,8 @@ class IRS_env(gym.Env):
         plt.title('Step ' + str(self.step_), fontsize=14, pad=20)
         plt.savefig("parameters_overtime.png")
         plt.close()
+
+        return 
         
     def reset(self):
         self.uavs_location = np.zeros((2, self.uavs))
@@ -679,7 +681,7 @@ class IRS_env(gym.Env):
         # plt.show()
         plt.close()
 
-    def animation(self,step_i):
+    def plot_results(self,step_i):
         ######################################### UAVs' colour ################################
         color_uav = ['red','green','blue']
         ######################################### For Visualization ################################
@@ -753,44 +755,11 @@ class IRS_env(gym.Env):
         plt.ylabel('y(m)')
         # plt.title('IRS-assisted FSO Communication in UAV Environment \n' + 'Step '+ str(self.step_))
         plt.legend(fontsize=12)
-        plt.savefig("UAV_moving"+ str(step_i) +".pdf", bbox_inches='tight')
+        plt.savefig("UAV_moving_"+ str(step_i) +".png", bbox_inches='tight')
         # plt.show()
         plt.close()
 
-        ######################################### For Table ################################
-        #Dữ liệu cho bảng
-        table_data = [
-            ['Backhaul Capacity', str(round(self.C_FSO[0] / 1e9, 2)) + ' (Gbps)',str(round(self.C_FSO[1] / 1e9, 2)) + ' (Gbps)',str(round(self.C_FSO[2] / 1e9, 2)) + ' (Gbps)'],
-            ['Threshold Rate', str(self.r_th // 1e6) + ' (Mbps)', str(self.r_th // 1e6) + ' (Mbps)', str(self.r_th // 1e6) + ' (Mbps)'],
-            ['The number Supported Users', str(int(np.sum(self.S_UAV0))), str(int(np.sum(self.S_UAV1))), str(int(np.sum(self.S_UAV2)))],
-            ['Users within coverage', str(int(np.sum(self.N_UAV0))), str(int(np.sum(self.N_UAV1))), str(int(np.sum(self.N_UAV2)))],
-            ['UAV max power', '10 (W)','10 (W)','10 (W)'],
-            ['UAV remaining power', str(round(self.P_UAV[0], 2)) + ' (W)', str(round(self.P_UAV[1], 2)) + ' (W)', str(round(self.P_UAV[2], 2)) + ' (W)']
-        ]
 
-        # Tạo figure và axis
-        fig, ax = plt.subplots()
-        ax.axis('off')  # Tắt trục
-
-        # Tạo bảng với tiêu đề cột
-        column_labels = ['Parameter', 'UAV0','UAV1','UAV2']
-        table = ax.table(
-            cellText=table_data,
-            colLabels=column_labels,
-            cellLoc='center',
-            loc='center'
-        )
-
-        # Tùy chỉnh font size
-        table.auto_set_font_size(False)
-        table.set_fontsize(12)
-        table.scale(1.2, 1.2)  # Tăng kích thước bảng
-
-        # Tiêu đề
-        plt.title('Step ' + str(self.step_), fontsize=14, pad=20)
-        plt.savefig("parameters_overtime.png")
-        plt.close()
-    
 
 
 
