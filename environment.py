@@ -13,13 +13,12 @@ class IRS_env(gym.Env):
     def __init__(self,
         ###################### IRS parameters ###########################
         L = 0.4, # (m) 
-        lambda_ = 1550e-9, # (m)
+        lambda_ = [1550e-9,1555e-9,1560e-9], # (m)
         # d1 = 4000, d2 = 4000, # (m)
         h_UAV = 350, # (m)
         ######## HAP ###########
         h_HAP = 20000, # (m) ~ 20km
         zenith_angle = 60, # (degree)
-        theta_r = 40, # (degree)
         theta_i = 40, # (degree)
         ########################
         wo = 2e-2, # (m) waist of gaussian beam
@@ -32,7 +31,7 @@ class IRS_env(gym.Env):
         v0 = 15, # UAV's velocity (m/s)
         tau = 1,
         ##### FSO ######
-        noise_power_FSO = 1e-5, # (Hz)
+        noise_power_FSO = 1e-5, # (W)
         P_FSO = 0.1, # (W)
         B_FSO = 1e9, # (Hz)
         noise_power = 1e-14, # (W)
@@ -53,16 +52,16 @@ class IRS_env(gym.Env):
         ############### IRS parameters ##############
         self.Lx = L
         self.Ly = L 
-        self.lambda_ = lambda_
+        self.lambda_ = np.array(lambda_)
         self.d1 = 40000
         self.d2 = 0
         self.h_UAV = h_UAV
         self.wd1 = 0
         ###### HAP ##########
         self.h_HAP = h_HAP 
-        self.zenith_angle = zenith_angle
+        self.zenith_angle = np.zeros(uavs) + zenith_angle
         self.sin_i = math.sin(math.radians(theta_i))
-        self.sin_r = math.sin(math.radians(theta_r))
+        self.sin_r = np.zeros(uavs) + np.sin(np.radians(90 - self.zenith_angle))
         ######################
         self.wo = wo
         self.a = a
@@ -152,33 +151,40 @@ class IRS_env(gym.Env):
         self.heatmap_UAV1 = np.zeros((self.grid_num,self.grid_num))
         self.heatmap_UAV2 = np.zeros((self.grid_num,self.grid_num))
         self.heatmap_users_unsatisfied = np.zeros((self.grid_num,self.grid_num))
+
+    def update_zenith_angle_and_reflected_angle(self):
+        hap_uav_initial_dis = np.tan(self.zenith_angle[0]) * self.h_HAP # self.zenith_angle[0 or 1 or 2] is initial zenith angle
+        for UAV_i in range(self.uavs):
+            uav_dis = math.sqrt(self.uavs_location[0,UAV_i]**2+self.uavs_location[1,UAV_i]**2)
+            self.zenith_angle[UAV_i] = np.arctan((hap_uav_initial_dis+uav_dis)/self.h_HAP)
+            self.sin_r[UAV_i] = math.sin(math.radians(90 - self.zenith_angle[UAV_i]))
+
     def d1d2_cal(self, UAV_i):
-        uav_dis = math.sqrt(self.uavs_location[0,UAV_i]**2+self.uavs_location[1,UAV_i]**2)
-        d_2 = math.sqrt(self.h_HAP**2 + (self.h_HAP*math.tanh(self.zenith_angle)+uav_dis)**2)
+        d_2 = self.h_HAP/self.zenith_angle[UAV_i]
         return self.d1,d_2
-    def G1_regime(self, d_2):
+    def G1_regime(self, d_2, UAV_i):
         # self.d1, d_2 = self.d1d2_cal()
         #####
         gLS = (2*np.pi*self.wo**2)/(4*np.pi*self.d1**2)
         gPD = (np.pi*self.a**2)/(4*np.pi*d_2**2)
-        G1 = 4*np.pi*(4*np.pi*self.irs**2*abs(self.sin_r)*abs(self.sin_i))*gLS*gPD/(self.lambda_**4)
+        G1 = 4*np.pi*(4*np.pi*self.irs**2*abs(self.sin_r[UAV_i])*abs(self.sin_i))*gLS*gPD/(self.lambda_[UAV_i]**4)
         return G1
-    def G2_regime(self, d_2):
+    def G2_regime(self, d_2, UAV_i):
         # self.d1, d_2 = self.d1d2_cal()
         #####
         gLS = (2*np.pi*self.wo**2)/(4*np.pi*self.d1**2)
-        G2 = 4*np.pi*self.irs*abs(self.sin_i)*gLS/(self.lambda_**2)
+        G2 = 4*np.pi*self.irs*abs(self.sin_i)*gLS/(self.lambda_[UAV_i]**2)
         return G2
-    def G3_regime(self, d_2):
+    def G3_regime(self, d_2,UAV_i):
         # self.d1, d_2 = self.d1d2_cal()
         #####
-        self.wd1 = self.wo*(1+(self.d1/self.zR)**2)**(1/2) # beamwidth at d1
-        Rd1 = self.d1*(1+(self.zR/self.d1)**2)# curvature of beam's wavefront at d1
-        v1 = 2*d_2/(self.k*self.wd1**2)
+        self.wd1 = self.wo*(1+(self.d1/self.zR[UAV_i])**2)**(1/2) # beamwidth at d1
+        Rd1 = self.d1*(1+(self.zR[UAV_i]/self.d1)**2)# curvature of beam's wavefront at d1
+        v1 = 2*d_2/(self.k[UAV_i]*self.wd1**2)
         v2 = d_2/Rd1
         #########
-        sin_all = (self.sin_i/self.sin_r)**2
-        Weqx = (self.wd1*abs(self.sin_r)/abs(self.sin_i)) * ((v1*sin_all)**2 + (v2*sin_all+1)**2)**(1/2)
+        sin_all = (self.sin_i/self.sin_r[UAV_i])**2
+        Weqx = (self.wd1*abs(self.sin_r[UAV_i])/abs(self.sin_i)) * ((v1*sin_all)**2 + (v2*sin_all+1)**2)**(1/2)
         Weqy = self.wd1*(v1**2 + (v2+1)**2)**(1/2)
         #########
         G3 = erf(math.sqrt(np.pi/2)*(self.a/Weqx)) * erf(math.sqrt(np.pi/2)*(self.a/Weqy))
@@ -186,11 +192,12 @@ class IRS_env(gym.Env):
     def S_cal(self, UAV_i):
         self.d1, d_2 = self.d1d2_cal(UAV_i)
         #####
-        self.wd1 = self.wo*(1+(self.d1/self.zR)**2)**(1/2) # beamwidth at d1
+        self.wd1 = self.wo*(1+(self.d1/self.zR[UAV_i])**2)**(1/2) # beamwidth at d1
         #########
-        S1 = (self.lambda_**2 * d_2**2)/(np.pi*self.a**2*abs(self.sin_r))
-        S2 = np.pi*self.G3_regime(d_2)*self.wd1**2/(2*abs(self.sin_i))
+        S1 = (self.lambda_[UAV_i]**2 * d_2**2)/(np.pi*self.a**2*abs(self.sin_r[UAV_i]))
+        S2 = np.pi*self.G3_regime(d_2,UAV_i)*self.wd1**2/(2*abs(self.sin_i))
         return S1,S2
+    
     def users_markov(self,random_user_list):
         s_random = np.random.normal(0, 1)
         d_random = np.random.normal(0, 45)
@@ -200,30 +207,32 @@ class IRS_env(gym.Env):
             self.users_location[0,i] += self.s_markov[i]*math.cos(self.d_markov[i])
             self.users_location[1,i] += self.s_markov[i]*math.sin(self.d_markov[i])
         self.users_location = np.clip(self.users_location,0,self.size)
+
     def geometric_loss(self, UAV_i):
         geo_loss = 0
         S1, S2 = self.S_cal(UAV_i)
         _ , d_2 = self.d1d2_cal(UAV_i)
         if self.irs < S1:
-            geo_loss = self.G1_regime(d_2)
+            geo_loss = self.G1_regime(d_2,UAV_i)
             self.regime = 'quadratic'
         elif self.irs >= S1 and self.irs <= S2:
-            geo_loss = self.G2_regime(d_2)
+            geo_loss = self.G2_regime(d_2,UAV_i)
             self.regime = 'linear'
         else:
-            geo_loss = self.G3_regime(d_2)
+            geo_loss = self.G3_regime(d_2,UAV_i)
             self.regime = 'saturate'
     
-        self.wd1 = self.wo*(1+(self.d1/self.zR)**2)**(1/2) # beamwidth at d1
-        if self.G3_regime(d_2) < 2*d_2**2 * self.wd1 * abs(self.sin_i) / ( self.d1**2 * self.a**2 * abs(self.sin_r) ):
-            S3 = math.sqrt(self.G3_regime(d_2))*self.lambda_*d_2*self.wd1/(self.a*math.sqrt(2*self.sin_i*self.sin_r))
+        self.wd1 = self.wo*(1+(self.d1/self.zR[UAV_i])**2)**(1/2) # beamwidth at d1
+        if self.G3_regime(d_2,UAV_i) < 2*d_2**2 * self.wd1 * abs(self.sin_i) / ( self.d1**2 * self.a**2 * abs(self.sin_r[UAV_i]) ):
+            S3 = math.sqrt(self.G3_regime(d_2,UAV_i))*self.lambda_[UAV_i]*d_2*self.wd1/(self.a*math.sqrt(2*self.sin_i*self.sin_r[UAV_i]))
             if self.irs <= S3:
-                geo_loss = self.G1_regime(d_2)
+                geo_loss = self.G1_regime(d_2,UAV_i)
                 self.regime = 'quadratic'
             else:
-                geo_loss = self.G3_regime(d_2)
+                geo_loss = self.G3_regime(d_2,UAV_i)
                 self.regime = 'saturate'
         return geo_loss
+    
     def cloud_attenuation(self, UAV_i):
         if self.step_ % self.cloud_moving_step == 0:
             cloud_step = self.cloud_moving_step
@@ -246,9 +255,9 @@ class IRS_env(gym.Env):
         elif V <= 0.5:
             elsilon = 0
 
-        B_dB = (3.91/V) * (self.lambda_/550)**(-epsilon)
+        B_dB = (3.91/V) * (self.lambda_[UAV_i]/550)**(-epsilon)
         B = B_dB/(10**4 * math.log10(math.e))
-        sec_eR = 1/(math.cos(math.radians(self.zenith_angle)))
+        sec_eR = 1/(math.cos(math.radians(self.zenith_angle[UAV_i])))
         cloud_gain = np.exp(-B*self.Hcl*sec_eR)
         return cloud_gain
     def users_inside_UAV_coverage(self,d_UAV):
@@ -286,6 +295,7 @@ class IRS_env(gym.Env):
         self.heatmap_UAV1 = np.zeros((self.grid_num,self.grid_num))
         self.heatmap_UAV2 = np.zeros((self.grid_num,self.grid_num))
         self.heatmap_users_unsatisfied = np.zeros((self.grid_num,self.grid_num))
+        self.update_zenith_angle_and_reflected_angle()
         ############################## psi_M is complex number ###############################
         self.psi_M_real = np.random.normal(0, 1/np.sqrt(2))
         self.psi_M_imag = np.random.normal(0, 1/np.sqrt(2))
@@ -552,6 +562,7 @@ class IRS_env(gym.Env):
         self.step_ = 0
         self.heatmap_users = np.zeros((self.grid_num,self.grid_num))
         self.P_UAV = np.zeros(self.uavs) + 10
+        self.update_zenith_angle_and_reflected_angle()
         ############ Heatmap #############################
         self.heatmap_UAV0 = np.zeros((self.grid_num,self.grid_num))
         self.heatmap_UAV1 = np.zeros((self.grid_num,self.grid_num))
