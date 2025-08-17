@@ -9,6 +9,8 @@ def parse_args():
     
     # IRS parameters
     parser.add_argument("--L", type=str, default=0.4, help="IRS size (m)")
+    parser.add_argument("--delta_IRS", type=str, default=0.9, help="IRS's reflection efficiency")
+    parser.add_argument("--eta_UAV", type=str, default=0.9, help="Photodetector responsivity")
     parser.add_argument("--lambda_", type=list, default=[1550e-9,1555e-9,1560e-9], help="Optical wavelength of UAVs (m)")
     parser.add_argument("--h_UAV", type=str, default=350, help="UAV's altitude (m)")
     parser.add_argument("--h_HAP", type=str, default=20000, help="HAP's altitude (m)")
@@ -17,8 +19,9 @@ def parse_args():
     parser.add_argument("--wo", type=str, default=2e-2, help="Waist of gaussian beam (m)")  
     parser.add_argument("--a", type=str, default=10e-2, help="Radius of lens (m)")  
 
+
     # UAV environment
-    parser.add_argument("--users", type=str, default=300, help="The number of mobile users")  
+    parser.add_argument("--users", type=str, default=200, help="The number of mobile users")  
     parser.add_argument("--uavs", type=str, default=3, help="The number of UAVs")  
     parser.add_argument("--size", type=str, default=2000, help="Target area size (m)")  
     parser.add_argument("--varphi_", type=str, default=np.pi/4, help="Half divergence angle of UAV (m)")  
@@ -43,5 +46,8 @@ def parse_args():
     # Cloud parameters
     parser.add_argument("--Nc", type=str, default=250, help="Droplet concentration (cm^-3)")
     parser.add_argument("--Hcl", type=str, default=2, help="Vertical extent of clouds (km)")
+
+    # DRL parameters
+    parser.add_argument("--episodes", type=str, default=4000, help="The number of episodes")
 
     return parser.parse_args()

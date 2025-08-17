@@ -24,7 +24,7 @@ has_continuous_action_space = False
 
 average_episode = 50            # how many average episodes that you want to print 
 max_ep_len = args.max_step                 # max timesteps in one episode
-max_training_timesteps = int(20e5)   # break training loop if timeteps > max_training_timesteps
+max_training_timesteps = args.max_step*args.episodes   # break training loop if timeteps > max_training_timesteps
 
 print_freq = max_ep_len * 4     # print avg reward in the interval (in num timesteps)
 log_freq = max_ep_len * 2       # log avg reward in the interval (in num timesteps)
@@ -51,7 +51,7 @@ ppo_agent2 = PPO(209, 5, lr_actor, lr_critic, gamma, K_epochs, eps_clip, has_con
 
 if __name__ == '__main__':
 
-    env = IRS_env(L=args.L, lambda_=args.lambda_, h_UAV=args.h_UAV, h_HAP=args.h_HAP, zenith_angle=args.zenith_angle, 
+    env = IRS_env(L=args.L, delta_IRS=args.delta_IRS, eta_UAV=args.eta_UAV ,lambda_=args.lambda_, h_UAV=args.h_UAV, h_HAP=args.h_HAP, zenith_angle=args.zenith_angle, 
                   theta_i=args.theta_i, wo=args.wo, a=args.a, users=args.users, uavs=args.uavs, size=args.size,
                   varphi_=args.varphi_, v0=args.v0, tau=args.tau, noise_power_FSO=args.noise_power_FSO, P_FSO=args.P_FSO, 
                   B_FSO=args.B_FSO, noise_power=args.noise_power, B_RF=args.B_RF, r_th=args.r_th, max_step= args.max_step,

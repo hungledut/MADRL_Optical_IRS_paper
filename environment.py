@@ -13,6 +13,8 @@ class IRS_env(gym.Env):
     def __init__(self,
         ###################### IRS parameters ###########################
         L = 0.4, # (m) 
+        delta_IRS = 0.9,
+        eta_UAV = 0.9,
         lambda_ = [1550e-9,1555e-9,1560e-9], # (m)
         # d1 = 4000, d2 = 4000, # (m)
         h_UAV = 350, # (m)
@@ -24,7 +26,7 @@ class IRS_env(gym.Env):
         wo = 2e-2, # (m) waist of gaussian beam
         a = 10e-2, # (m) radius of lens
         ###################### UAV Environment #########################
-        users = 300,
+        users = 150,
         uavs = 3,
         size = 2000,
         varphi_ = np.pi/4,
@@ -52,6 +54,8 @@ class IRS_env(gym.Env):
         ############### IRS parameters ##############
         self.Lx = L
         self.Ly = L 
+        self.delta_IRS = delta_IRS
+        self.eta_UAV = eta_UAV
         self.lambda_ = np.array(lambda_)
         self.d1 = 40000
         self.d2 = 0
@@ -327,7 +331,7 @@ class IRS_env(gym.Env):
         ################################## FSO Capacity ###########################################
 
         for UAV_i in range(self.uavs):
-            SNR = self.P_FSO*geo_loss[UAV_i]*cloud_gain[UAV_i]/self.noise_power_FSO
+            SNR = self.P_FSO*geo_loss[UAV_i]*cloud_gain[UAV_i]*self.delta_IRS*self.eta_UAV/self.noise_power_FSO
             self.C_FSO[UAV_i] = self.B_FSO*math.log2(1+SNR)
         ###########################################################################################
 

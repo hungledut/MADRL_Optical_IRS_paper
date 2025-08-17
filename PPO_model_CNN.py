@@ -51,14 +51,7 @@ class ActorCritic(nn.Module):
 
         # ACTOR
         if has_continuous_action_space : # continuous action space
-            self.actor = nn.Sequential(
-                            nn.Linear(state_dim, 64),
-                            nn.Tanh(),
-                            nn.Linear(64, 64),
-                            nn.Tanh(),
-                            nn.Linear(64, action_dim),
-                            nn.Tanh()
-                        )
+            self.actor = Multimodal()
         else: # discrete action space
             self.actor = Multimodal()
 
@@ -104,7 +97,7 @@ class ActorCritic(nn.Module):
 
         # ACTOR
         if self.has_continuous_action_space:
-            action_mean = self.actor(state)
+            action_mean = self.actor(state,cloud)
             action_var = self.action_var.expand_as(action_mean)
             cov_mat = torch.diag_embed(action_var).to(device)
             dist = MultivariateNormal(action_mean, cov_mat)
