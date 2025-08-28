@@ -45,7 +45,7 @@ def parse_args():
 
     # Cloud parameters
     parser.add_argument("--Nc", type=str, default=250, help="Droplet concentration (cm^-3)")
-    parser.add_argument("--Hcl", type=str, default=2, help="Vertical extent of clouds (m)")
+    parser.add_argument("--Hcl", type=str, default=2e3, help="Vertical extent of clouds (m)")
 
     # DRL parameters
     parser.add_argument("--episodes", type=str, default=4000, help="The number of episodes")
