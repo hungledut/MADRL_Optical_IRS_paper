@@ -44,7 +44,7 @@ class IRS_env(gym.Env):
         grid_num = 10,
         ###### Cloud ######
         Nc = 250, # (cm^-3)
-        Hcl = 2, # (km)
+        Hcl = 2e3, # (m)
         cloud_moving_step = 15, #
         ####### Train or Test ? #######
         test = False,
