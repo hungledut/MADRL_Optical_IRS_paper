@@ -260,7 +260,7 @@ class IRS_env(gym.Env):
         elif V <= 0.5:
             elsilon = 0
 
-        B_dB = (3.91/V) * (self.lambda_[UAV_i]/550)**(-epsilon)
+        B_dB = (3.91/V) * (self.lambda_[UAV_i]*1e9/550)**(-epsilon)
         B = B_dB/(10**4 * math.log10(math.e))
         sec_eR = 1/(math.cos(math.radians(self.zenith_angle[UAV_i])))
         cloud_gain = np.exp(-B*self.Hcl*sec_eR)
