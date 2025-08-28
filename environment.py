@@ -245,7 +245,7 @@ class IRS_env(gym.Env):
         cloud_gain = []
         x_axis = int(abs(self.size - self.uavs_location[1,UAV_i]-1)//self.grid_size_cloud)
         y_axis = int(abs(self.uavs_location[0,UAV_i]-1)//self.grid_size_cloud)
-        CLWC_ = self.CLWC[x_axis,y_axis]
+        CLWC_ = self.CLWC[x_axis,y_axis]*1e-3 # 1e-3 for convert mg/m^3 -> g/m^3
         V = 1.002/(self.Nc*CLWC_)**0.6473
         # print(CLWC_)
         epsilon = 0
