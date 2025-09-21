@@ -21,7 +21,7 @@ def parse_args():
 
 
     # UAV environment
-    parser.add_argument("--users", type=str, default=200, help="The number of mobile users")  
+    parser.add_argument("--users", type=int, default=200, help="The number of mobile users")  
     parser.add_argument("--uavs", type=str, default=3, help="The number of UAVs")  
     parser.add_argument("--size", type=str, default=2000, help="Target area size (m)")  
     parser.add_argument("--varphi_", type=str, default=np.pi/4, help="Half divergence angle of UAV (m)")  
@@ -29,8 +29,8 @@ def parse_args():
     parser.add_argument("--tau", type=str, default=1, help="Time slot duration (s)")  
 
     # FSO parameters
-    parser.add_argument("--noise_power_FSO", type=str, default=1e-5, help="FSO noise power (W)")
-    parser.add_argument("--P_FSO", type=str, default=0.1, help="FSO power (W)")
+    parser.add_argument("--noise_power_FSO", type=str, default=1e-7, help="FSO noise power (W)")
+    parser.add_argument("--P_FSO", type=float, default=3, help="FSO power (W)")
     parser.add_argument("--B_FSO", type=str, default=1e9, help="FSO bandwidth (Hz)")
 
     # RF parameters

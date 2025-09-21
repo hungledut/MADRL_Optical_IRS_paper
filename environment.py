@@ -33,8 +33,8 @@ class IRS_env(gym.Env):
         v0 = 15, # UAV's velocity (m/s)
         tau = 1,
         ##### FSO ######
-        noise_power_FSO = 1e-5, # (W)
-        P_FSO = 0.1, # (W)
+        noise_power_FSO = 1e-7, # (W)
+        P_FSO = 2, # (W)
         B_FSO = 1e9, # (Hz)
         noise_power = 1e-14, # (W)
         P_UAV = 10, # (W) -> 
@@ -63,9 +63,9 @@ class IRS_env(gym.Env):
         self.wd1 = 0
         ###### HAP ##########
         self.h_HAP = h_HAP 
-        self.zenith_angle = np.zeros(uavs) + zenith_angle
+        self.zenith_angle = np.zeros(uavs) + math.radians(zenith_angle)
         self.sin_i = math.sin(math.radians(theta_i))
-        self.sin_r = np.zeros(uavs) + np.sin(np.radians(90 - self.zenith_angle))
+        self.sin_r = np.zeros(uavs) + np.sin(np.pi/2 - self.zenith_angle)
         ######################
         self.wo = wo
         self.a = a
@@ -102,7 +102,7 @@ class IRS_env(gym.Env):
         self.max_step = max_step
         self.uavs_location = np.zeros((2, self.uavs))
         # self.hap_location = np.array([[300],[400]])
-        self.users_location = np.clip(np.random.normal(loc=1000, scale=240, size=(2, self.users)),0,1999)
+        self.users_location = np.clip(np.random.normal(loc=1000, scale=300, size=(2, self.users)),0,1999)
         self.satisfied_users = np.zeros(self.users)
         self.rate_UAV = np.zeros(self.users) - 1000
         self.UAV0_behavior = np.zeros((2, self.max_step))
@@ -156,13 +156,14 @@ class IRS_env(gym.Env):
         self.heatmap_UAV2 = np.zeros((self.grid_num,self.grid_num))
         self.heatmap_users_unsatisfied = np.zeros((self.grid_num,self.grid_num))
 
+        self.hap_uav_initial_dis = np.tan(self.zenith_angle[0]) * self.h_HAP
+
 
     def update_zenith_angle_and_reflected_angle(self):
-        hap_uav_initial_dis = np.tan(self.zenith_angle[0]) * self.h_HAP # self.zenith_angle[0 or 1 or 2] is initial zenith angle
         for UAV_i in range(self.uavs):
             uav_dis = math.sqrt(self.uavs_location[0,UAV_i]**2+self.uavs_location[1,UAV_i]**2)
-            self.zenith_angle[UAV_i] = np.arctan((hap_uav_initial_dis+uav_dis)/self.h_HAP)
-            self.sin_r[UAV_i] = math.sin(math.radians(90 - self.zenith_angle[UAV_i]))
+            self.zenith_angle[UAV_i] = np.arctan((self.hap_uav_initial_dis+uav_dis)/self.h_HAP)
+            self.sin_r[UAV_i] = math.sin(np.pi/2 - self.zenith_angle[UAV_i])
 
     def d1d2_cal(self, UAV_i):
         d_2 = self.h_HAP/self.zenith_angle[UAV_i]
@@ -322,7 +323,7 @@ class IRS_env(gym.Env):
         geo_loss = []
         for UAV_i in range(self.uavs):
             geo_loss.append(self.geometric_loss(UAV_i))
-    
+
         ################################## Cloud Attenuation ######################################
         cloud_gain = []
         for UAV_i in range(self.uavs):
@@ -518,7 +519,7 @@ class IRS_env(gym.Env):
         plt.ylabel('y(m)')
         # plt.title('IRS-assisted FSO Communication in UAV Environment \n' + 'Step '+ str(self.step_))
         plt.legend()
-        plt.savefig("UAV_moving.pdf", bbox_inches='tight')
+        plt.savefig("UAV_moving.png", bbox_inches='tight')
         # plt.show()
         plt.close()
 
@@ -561,7 +562,7 @@ class IRS_env(gym.Env):
     def reset(self):
         self.uavs_location = np.zeros((2, self.uavs))
         # np.random.seed(42)
-        self.users_location = np.clip(np.random.normal(loc=1000, scale=240, size=(2, self.users)),0,1999)
+        self.users_location = np.clip(np.random.normal(loc=1000, scale=300, size=(2, self.users)),0,1999)
         self.satisfied_users = np.zeros(self.users)
         self.UAV0_behavior = np.zeros((2, self.max_step))
         self.UAV1_behavior = np.zeros((2, self.max_step))
@@ -638,7 +639,7 @@ class IRS_env(gym.Env):
         plt.axvline(0, color='black', linewidth=0.5)
         plt.legend()
         plt.savefig("beamfootprint_at_IRS.png")
-    def generate_cloud_matrix(self,height, width, num_clouds=100, min_clwc=5, max_clwc=15):
+    def generate_cloud_matrix(self,height, width, num_clouds=100, min_clwc=5, max_clwc=7.5):
         clwc_matrix = np.zeros((height, width))
 
         for _ in range(num_clouds):
@@ -663,7 +664,7 @@ class IRS_env(gym.Env):
         # Chèn vào ma trận
             clwc_matrix[top:top+cloud_h, left:left+cloud_w] += cloud_patch
 
-        clwc_matrix = np.clip(clwc_matrix,1,15)
+        clwc_matrix = np.clip(clwc_matrix,1,7.5) # CLWC range from 1 to 7.5 mg/m^3
         return clwc_matrix
     def plot_cloud(self):
 
@@ -760,6 +761,7 @@ class IRS_env(gym.Env):
         # plt.title('IRS-assisted FSO Communication in UAV Environment \n' + 'Step '+ str(self.step_))
         plt.legend(fontsize=12)
         plt.savefig("UAV_moving_"+ str(step_i) +".png", bbox_inches='tight')
+        plt.savefig("UAV_moving.png", bbox_inches='tight')
         # plt.show()
         plt.close()
 

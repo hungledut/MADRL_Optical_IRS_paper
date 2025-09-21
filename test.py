@@ -75,8 +75,8 @@ if __name__ == '__main__':
         # end = time.time()
         # print('computational time = ', end - start)
 
-        if step_i % 5 == 0:
-            env.plot_results(step_i)
+        if step_i % 10 == 0:
+            env.plot()
 
             ######################################### USERS ##############################################
             # Set global font size
@@ -93,7 +93,7 @@ if __name__ == '__main__':
             plt.ylabel('The percentage of supported users (%)')
             plt.legend(fontsize = 15)
             # plt.title('The percentage of users supported by UAVs on each step')
-            plt.savefig("result_step.pdf", bbox_inches='tight')
+            # plt.savefig("result_step_" + str(step_i) + ".png", bbox_inches='tight')
             # plt.show()
             plt.close()
             ######################################### BACKHAUL CAPACITY ######################################
@@ -120,7 +120,7 @@ if __name__ == '__main__':
             plt.ylabel('Backhaul capacity (1e9 bps)')
             # plt.title('The Backhaul capacity on each step')
             plt.legend()
-            plt.savefig("result_backhaul.pdf", bbox_inches='tight')
+            # plt.savefig("result_backhaul"+str(step_i)+".png", bbox_inches='tight')
             # plt.show()
             plt.close()
 

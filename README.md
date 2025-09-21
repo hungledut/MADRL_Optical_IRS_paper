@@ -17,6 +17,7 @@ py test.py
 
 <p align="center">
   <img src="images/UAV_animation.gif" alt="framework" width="500">
+  <img src="images/result_step.gif" alt="framework" width="500">
 </p>
 
 ### Code Usage 
