@@ -1,5 +1,17 @@
 ## Multi-Agent Deep Reinforcement Learning for UAV Placement in Optical IRS-Aided Aerial Networks
 
+~~~
+@inproceedings{le2025multi,
+  title={Multi-Agent Deep Reinforcement Learning for UAV Placement in Optical IRS-Aided Aerial Networks},
+  author={Le, Hung V and Le, Hoang D and Dao, Duy-Tuan and Pham, Anh T},
+  booktitle={2025 30th Asia-Pacific Conference on Communications (APCC)},
+  pages={1--6},
+  year={2025},
+  organization={IEEE}
+}
+~~~
+
+
 ### Our proposed MADRL framework for Optical IRS-Aided Aerial Networks
 <p align="center">
   <img src="images/proposed_framework.png" alt="framework" width="400">
