@@ -1,5 +1,6 @@
 ## Multi-Agent Deep Reinforcement Learning for UAV Placement in Optical IRS-Aided Aerial Networks
 
+### Paper citation
 ~~~
 @inproceedings{le2025multi,
   title={Multi-Agent Deep Reinforcement Learning for UAV Placement in Optical IRS-Aided Aerial Networks},
