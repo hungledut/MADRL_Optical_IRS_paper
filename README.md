@@ -1,6 +1,6 @@
 ## Multi-Agent Deep Reinforcement Learning for UAV Placement in Optical IRS-Aided Aerial Networks
 
-This is the source code of our paper [Multi-Agent Deep Reinforcement Learning for UAV Placement in Optical IRS-Aided Aerial Networks](https://ieeexplore.ieee.org/document/11279740) presented in 30th APCC 2025, proposing the CP-PPO integrating multimodal deep learning into deep reinforcement learning.
+This is the source code of our paper [Multi-Agent Deep Reinforcement Learning for UAV Placement in Optical IRS-Aided Aerial Networks](https://ieeexplore.ieee.org/document/11279740) presented at 30th APCC 2025, proposing the CP-PPO integrating multimodal deep learning into deep reinforcement learning.
 
 ### Paper citation
 ~~~
