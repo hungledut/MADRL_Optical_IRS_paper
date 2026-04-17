@@ -2,6 +2,8 @@
 
 This is the source code of our paper [Multi-Agent Deep Reinforcement Learning for UAV Placement in Optical IRS-Aided Aerial Networks](https://ieeexplore.ieee.org/document/11279740) presented at 30th APCC 2025, proposing the CP-PPO integrating multimodal deep learning into deep reinforcement learning.
 
+> This study presents an air-ground integrated network (AGIN) architecture, integrating the free-space optics (FSO)-based high-altitude platform (HAP) for backhaul and unmanned aerial vehicles (UAVs) for last-mile radio frequency (RF) access. Specifically, the HAP equipped with an intelligent reflecting surface (IRS) provides the FSO-based backhaul to multiple UAV-mounted base stations (BSs). To offer high-speed data services over dynamic networks, the objective is to seek the optimal UAV-mounted BS placement to maximize the number of supported mobile users (MUs). To this end, we propose an optimization framework that integrates a convolutional neural network (CNN) with a proximal policy optimization (PPO)-based multi-agent deep reinforcement learning (MADRL), referred to as CP-PPO-based MADRL. Simulation results demonstrate the effectiveness of the proposed framework over the state-of-the-art approaches and support for the proper selection of IRS size.
+
 ### Paper citation
 ~~~
 @inproceedings{le2025multi,
